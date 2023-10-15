@@ -1,7 +1,7 @@
 package router
 
 import (
-	"net/http"
+	"twenv/handlers"
 
 	"github.com/gin-gonic/gin"
 )
@@ -9,30 +9,10 @@ import (
 func InitializeRoutes(r *gin.Engine) {
 	v1 := r.Group("/api/v1")
 	{
-		v1.GET("/spending", func(c *gin.Context) {
-			c.JSON(http.StatusOK, gin.H{
-				"message": "Show spending",
-			})
-		})
-		v1.POST("/spending", func(c *gin.Context) {
-			c.JSON(http.StatusOK, gin.H{
-				"message": "Create spending",
-			})
-		})
-		v1.PUT("/spending", func(c *gin.Context) {
-			c.JSON(http.StatusOK, gin.H{
-				"message": "Put spending",
-			})
-		})
-		v1.DELETE("/spending", func(c *gin.Context) {
-			c.JSON(http.StatusOK, gin.H{
-				"message": "Delete spending",
-			})
-		})
-		v1.GET("/spendings", func(c *gin.Context) {
-			c.JSON(http.StatusOK, gin.H{
-				"message": "All spending",
-			})
-		})
+		v1.GET("/spending", handlers.ShowSpending)
+		v1.POST("/spending", handlers.CreateSpending)
+		v1.PUT("/spending", handlers.UpdateSpending)
+		v1.DELETE("/spending", handlers.DeleteSpending)
+		v1.GET("/spendings", handlers.ListSpending)
 	}
 }
