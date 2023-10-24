@@ -1,18 +1,22 @@
 package main
 
 import (
-	"fmt"
-	c "twenv/config"
-	r "twenv/router"
+	config "twenv/config"
+	router "twenv/router"
+)
+
+var (
+	logger *config.Logger
 )
 
 func main() {
+	logger = config.GetLogger("main")
 	// Initialize configs
-	err := c.Init()
+	err := config.Init()
 	if err != nil {
-		fmt.Println(err)
+		logger.Errorf("error initializing config: %v", err)
 		return
 	}
 	// Initialize the router
-	r.Initialize()
+	router.Initialize()
 }

@@ -10,6 +10,8 @@ var (
 )
 
 func Init() error {
+	// error := errors.New("Erro fake")
+	// return error
 	return nil
 }
 
