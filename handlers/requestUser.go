@@ -27,3 +27,21 @@ func (u *CreateUserRequest) Validate() error {
 	}
 	return nil
 }
+
+type CreateSignRequest struct {
+	Email    string `json:"email"`
+	Password string `json:"password"`
+}
+
+func (u *CreateSignRequest) ValidateSignIn() error {
+	if u.Password == "" && u.Email == "" {
+		return fmt.Errorf("request body is empty")
+	}
+	if u.Email == "" {
+		return errParamIsRequired("email")
+	}
+	if u.Password == "" {
+		return errParamIsRequired("password")
+	}
+	return nil
+}

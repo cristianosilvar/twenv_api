@@ -28,6 +28,7 @@ func InitializeRoutes(r *gin.Engine) {
 		v1.DELETE("/spending", handlers.DeleteSpending)
 		v1.GET("/spendings", handlers.ListSpending)
 		//
-		v1.POST("user", handlers.CreateUserHandler)
+		v1.POST("/user/signup", handlers.CreateUserHandler)
+		v1.POST("/user/signin", handlers.SignIn)
 	}
 }

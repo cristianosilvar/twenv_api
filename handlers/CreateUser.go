@@ -8,6 +8,8 @@ import (
 	"github.com/gin-gonic/gin"
 	"go.mongodb.org/mongo-driver/bson"
 	"go.mongodb.org/mongo-driver/mongo"
+
+	"golang.org/x/crypto/bcrypt"
 )
 
 func CreateUserHandler(ctx *gin.Context) {
@@ -22,13 +24,7 @@ func CreateUserHandler(ctx *gin.Context) {
 
 	collection := client.Database("Cluster0").Collection("users")
 
-	user := schemas.User{
-		Username: request.Username,
-		Password: request.Password,
-		Email:    request.Email,
-	}
-
-	exist, err := emailExists(collection, user.Email)
+	exist, err := emailExists(collection, request.Email)
 	if err != nil {
 		logger.Errorf("error emailExists: %v", err)
 		return
@@ -39,20 +35,40 @@ func CreateUserHandler(ctx *gin.Context) {
 		return
 	}
 
-	result, err := collection.InsertOne(context.TODO(), &user)
+	// hash password
+	hash, err := bcrypt.GenerateFromPassword([]byte(request.Password), 10)
 	if err != nil {
-		logger.Errorf("error creating users: %v", err)
-		sendError(ctx, http.StatusInternalServerError, "error inserting user")
+		sendError(ctx, http.StatusBadRequest, "error creating hash password")
 		return
 	}
 
-	response := CreateUserResponse{
-		Id:       result.InsertedID,
-		Username: user.Username,
-		Email:    user.Email,
+	userRequest := schemas.User{
+		Username: request.Username,
+		Password: string(hash),
+		Email:    request.Email,
 	}
 
-	sendSuccess(ctx, "created-user", response)
+	res, err := collection.InsertOne(context.TODO(), &userRequest)
+
+	if err != nil {
+		logger.Errorf("error creating users: %v", err)
+		logger.Errorf("error creating users: %v", res)
+		sendError(ctx, http.StatusInternalServerError, "error inserting user v%")
+		return
+	}
+
+	user, err := getUserByEmail(request.Email, collection, ctx)
+
+	tokenString, err := CreateTokenString(user)
+
+	if err != nil {
+		sendError(ctx, http.StatusBadRequest, "error signing token")
+		return
+	}
+
+	sendSuccess(ctx, "created user", gin.H{
+		"token": tokenString,
+	})
 }
 
 // Check if the email already exists in the collection
