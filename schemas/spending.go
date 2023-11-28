@@ -1,11 +1,11 @@
 package schemas
 
-import "gorm.io/gorm"
+import (
+	"time"
+)
 
 type Spending struct {
-	gorm.Model
-
 	Value       float64
 	Description string
-	Date        string
+	Date        time.Time
 }

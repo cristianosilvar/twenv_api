@@ -1,6 +1,9 @@
 package handlers
 
-import "fmt"
+import (
+	"fmt"
+	"time"
+)
 
 func errParamIsRequired(name string) error {
 	return fmt.Errorf("param: %s is required", name)
@@ -42,6 +45,32 @@ func (u *CreateSignRequest) ValidateSignIn() error {
 	}
 	if u.Password == "" {
 		return errParamIsRequired("password")
+	}
+	return nil
+}
+
+type Spending struct {
+	Value       float64
+	Description string
+	Date        time.Time
+}
+
+type SpendingResponse struct {
+	Id          any
+	Value       float64
+	Description string
+	Date        time.Time
+}
+
+func (spending *Spending) ValidateSpending() error {
+	if spending.Description == "" && spending.Value == 0 {
+		return fmt.Errorf("request body is empty")
+	}
+	if spending.Description == "" {
+		return errParamIsRequired("description")
+	}
+	if spending.Value == 0 {
+		return errParamIsRequired("value")
 	}
 	return nil
 }
