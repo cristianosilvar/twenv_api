@@ -56,7 +56,7 @@ type Spending struct {
 }
 
 type SpendingResponse struct {
-	Id          any
+	Id          any `bson:"_id,omitempty"`
 	Value       float64
 	Description string
 	Date        time.Time

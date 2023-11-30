@@ -1,44 +1,45 @@
 package handlers
 
 import (
-	"context"
 	"net/http"
-	"twenv/schemas"
 
 	"github.com/gin-gonic/gin"
+	"go.mongodb.org/mongo-driver/bson"
 )
 
 func ListSpending(ctx *gin.Context) {
-	request := Spending{}
-	ctx.BindJSON(&request)
-
-	if err := request.ValidateSpending(); err != nil {
-		logger.Errorf("validation error: %v", err.Error())
-		sendError(ctx, http.StatusBadRequest, err.Error())
-		return
-	}
-
 	collection := client.Database("Cluster0").Collection("spendings")
 
-	spending := schemas.Spending{
-		Value:       request.Value,
-		Date:        request.Date,
-		Description: request.Description,
-	}
-
-	result, err := collection.InsertOne(context.TODO(), &spending)
+	cursor, err := collection.Find(ctx, bson.M{})
 	if err != nil {
-		sendError(ctx, http.StatusInternalServerError, "error inserting spending")
-		logger.Errorf("error creating spending: %v", err)
-		return
+		if err != nil {
+			sendError(ctx, http.StatusInternalServerError, "error find spendings")
+			return
+		}
 	}
 
-	response := SpendingResponse{
-		Id:          result.InsertedID,
-		Value:       spending.Value,
-		Date:        spending.Date,
-		Description: spending.Description,
+	defer cursor.Close(ctx)
+
+	// Itera sobre os resultados
+	var spendings []SpendingResponse
+
+	for cursor.Next(ctx) {
+		var spending SpendingResponse
+		if err := cursor.Decode(&spending); err != nil {
+			logger.Error(err.Error())
+			sendError(ctx, http.StatusBadRequest, err.Error())
+		}
+		spendings = append(spendings, spending)
 	}
 
-	sendSuccess(ctx, "created-spending", response)
+	// Verifica se houve erros durante a iteração
+	if err := cursor.Err(); err != nil {
+		if err != nil {
+			logger.Errorf("error iteration in spendings: ")
+			sendError(ctx, http.StatusBadRequest, err.Error())
+			return
+		}
+	}
+
+	sendSuccess(ctx, "get-spendings", spendings)
 }
