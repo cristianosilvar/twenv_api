@@ -8,7 +8,7 @@ import (
 	"github.com/gin-gonic/gin"
 )
 
-func CreateSpending(ctx *gin.Context) {
+func CreateEarning(ctx *gin.Context) {
 	request := Spending{}
 	ctx.BindJSON(&request)
 
@@ -18,27 +18,27 @@ func CreateSpending(ctx *gin.Context) {
 		return
 	}
 
-	collection := client.Database("Cluster0").Collection("spendings")
+	collection := client.Database("Cluster0").Collection("earnings")
 
-	spending := schemas.Spending{
+	earning := schemas.Spending{
 		Value:       request.Value,
 		Date:        request.Date,
 		Description: request.Description,
 	}
 
-	result, err := collection.InsertOne(context.TODO(), &spending)
+	result, err := collection.InsertOne(context.TODO(), &earning)
 	if err != nil {
-		sendError(ctx, http.StatusInternalServerError, "error inserting spending")
-		logger.Errorf("error creating spending: %v", err)
+		sendError(ctx, http.StatusInternalServerError, "error inserting earning")
+		logger.Errorf("error creating earning: %v", err)
 		return
 	}
 
 	response := SpendingResponse{
 		Id:          result.InsertedID,
-		Value:       spending.Value,
-		Date:        spending.Date,
-		Description: spending.Description,
+		Value:       earning.Value,
+		Date:        earning.Date,
+		Description: earning.Description,
 	}
 
-	sendSuccess(ctx, "created-spending", response)
+	sendSuccess(ctx, "created-earning", response)
 }

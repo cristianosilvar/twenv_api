@@ -7,13 +7,13 @@ import (
 	"go.mongodb.org/mongo-driver/bson"
 )
 
-func ListSpending(ctx *gin.Context) {
-	collection := client.Database("Cluster0").Collection("spendings")
+func ListEarnings(ctx *gin.Context) {
+	collection := client.Database("Cluster0").Collection("earnings")
 
 	cursor, err := collection.Find(ctx, bson.M{})
 	if err != nil {
 		if err != nil {
-			sendError(ctx, http.StatusInternalServerError, "error find spendings")
+			sendError(ctx, http.StatusInternalServerError, "error find earnings")
 			return
 		}
 	}
@@ -21,25 +21,25 @@ func ListSpending(ctx *gin.Context) {
 	defer cursor.Close(ctx)
 
 	// Itera sobre os resultados
-	var spendings []SpendingResponse
+	var earnings []SpendingResponse
 
 	for cursor.Next(ctx) {
-		var spending SpendingResponse
-		if err := cursor.Decode(&spending); err != nil {
+		var earning SpendingResponse
+		if err := cursor.Decode(&earning); err != nil {
 			logger.Error(err.Error())
 			sendError(ctx, http.StatusBadRequest, err.Error())
 		}
-		spendings = append(spendings, spending)
+		earnings = append(earnings, earning)
 	}
 
 	// Verifica se houve erros durante a iteração
 	if err := cursor.Err(); err != nil {
 		if err != nil {
-			logger.Errorf("error iteration in spendings: ")
+			logger.Errorf("error iteration in earnings: ")
 			sendError(ctx, http.StatusBadRequest, err.Error())
 			return
 		}
 	}
 
-	sendSuccess(ctx, "get-spendings", spendings)
+	sendSuccess(ctx, "get-earnings", earnings)
 }
