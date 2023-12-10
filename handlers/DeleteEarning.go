@@ -7,11 +7,7 @@ import (
 	"go.mongodb.org/mongo-driver/bson"
 )
 
-type SpendingDelete struct {
-	Id string `json:"id"`
-}
-
-func DeleteSpending(ctx *gin.Context) {
+func DeleteEarning(ctx *gin.Context) {
 	spendingId := Delete{}
 	/* ctx.BindJSON(&request) */
 

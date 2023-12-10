@@ -7,7 +7,7 @@ import (
 	"go.mongodb.org/mongo-driver/bson"
 )
 
-func UpdateSpending(ctx *gin.Context) {
+func UpdateEarning(ctx *gin.Context) {
 	updateSpending := SpendingResponse{}
 	/* ctx.BindJSON(&request) */
 

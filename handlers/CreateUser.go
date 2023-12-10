@@ -58,6 +58,10 @@ func CreateUserHandler(ctx *gin.Context) {
 	}
 
 	user, err := getUserByEmail(request.Email, collection, ctx)
+	if err != nil {
+		sendError(ctx, http.StatusBadRequest, "error email") // ::
+		return
+	}
 
 	tokenString, err := CreateTokenString(user)
 

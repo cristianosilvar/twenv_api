@@ -55,11 +55,15 @@ type Spending struct {
 	Date        time.Time
 }
 
+type Delete struct {
+	Id string `json:"id"`
+}
+
 type SpendingResponse struct {
-	Id          any `bson:"_id,omitempty"`
-	Value       float64
-	Description string
-	Date        time.Time
+	Id          any       `bson:"_id,omitempty"`
+	Value       float64   `json:"value"`
+	Description string    `json:"description"`
+	Date        time.Time `json:"date"`
 }
 
 func (spending *Spending) ValidateSpending() error {
@@ -71,6 +75,13 @@ func (spending *Spending) ValidateSpending() error {
 	}
 	if spending.Value == 0 {
 		return errParamIsRequired("value")
+	}
+	return nil
+}
+
+func (item *Delete) ValidateDelete() error {
+	if item.Id == "" {
+		return errParamIsRequired("id")
 	}
 	return nil
 }
