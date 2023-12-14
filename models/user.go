@@ -1,4 +1,4 @@
-package schemas
+package models
 
 // import "time"
 
@@ -15,4 +15,16 @@ type UserResponse struct {
 	// CreatedAt time.Time `json:"createdAt"`
 	// UpdatedAt time.Time `json:"updatedAt"`
 	// DeletedAt time.Time `json:"deletedAt,omitempty"`
+}
+
+type CreateUserResponse struct {
+	Id       interface{} `json:"id"`
+	Username string      `json:"username"`
+	Email    string      `json:"email"`
+}
+
+type CreateUserRequest struct {
+	Username string `json:"username"`
+	Email    string `json:"email"`
+	Password string `json:"password"`
 }

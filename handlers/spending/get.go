@@ -1,4 +1,4 @@
-package handlers
+package spending
 
 import (
 	"net/http"

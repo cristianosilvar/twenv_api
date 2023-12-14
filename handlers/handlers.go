@@ -2,16 +2,19 @@ package handlers
 
 import (
 	"twenv/config"
+	"twenv/utils"
 
 	"go.mongodb.org/mongo-driver/mongo"
 )
 
 var (
-	logger *config.Logger
-	client *mongo.Client
+	Logger      *config.Logger
+	Client      *mongo.Client
+	SendError   = utils.SendError
+	SendSuccess = utils.SendSuccess
 )
 
 func InitializeHandlers() {
-	logger = config.NewLogger("inialize handlers")
-	client = config.GetMongoDB()
+	Logger = config.NewLogger("inialize handlers")
+	Client = config.GetMongoDB()
 }

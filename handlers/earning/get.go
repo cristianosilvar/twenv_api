@@ -1,4 +1,4 @@
-package handlers
+package earning
 
 import "github.com/gin-gonic/gin"
 

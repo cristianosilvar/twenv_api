@@ -8,7 +8,6 @@ require (
 	github.com/gin-gonic/gin v1.9.1
 	go.mongodb.org/mongo-driver v1.13.0
 	golang.org/x/crypto v0.9.0
-	gorm.io/gorm v1.25.5
 )
 
 require (
@@ -21,8 +20,6 @@ require (
 	github.com/go-playground/validator/v10 v10.14.0 // indirect
 	github.com/goccy/go-json v0.10.2 // indirect
 	github.com/golang/snappy v0.0.1 // indirect
-	github.com/jinzhu/inflection v1.0.0 // indirect
-	github.com/jinzhu/now v1.1.5 // indirect
 	github.com/json-iterator/go v1.1.12 // indirect
 	github.com/klauspost/compress v1.13.6 // indirect
 	github.com/klauspost/cpuid/v2 v2.2.4 // indirect
