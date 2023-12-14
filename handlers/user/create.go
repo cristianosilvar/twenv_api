@@ -1,9 +1,10 @@
-package handlers
+package user
 
 import (
 	"context"
 	"net/http"
-	"twenv/schemas"
+	"twenv/handlers"
+	"twenv/models"
 
 	"github.com/gin-gonic/gin"
 	"go.mongodb.org/mongo-driver/bson"
@@ -12,37 +13,37 @@ import (
 	"golang.org/x/crypto/bcrypt"
 )
 
-func CreateUserHandler(ctx *gin.Context) {
-	request := CreateUserRequest{}
+func CreateUser(ctx *gin.Context) {
+	request := models.User{}
 	ctx.BindJSON(&request)
 
-	if err := request.Validate(); err != nil {
-		logger.Errorf("validation error: %v", err.Error())
-		sendError(ctx, http.StatusBadRequest, err.Error())
+	if err := validate(&request); err != nil {
+		handlers.Logger.Errorf("validation error: %v", err.Error())
+		handlers.SendError(ctx, http.StatusBadRequest, err.Error())
 		return
 	}
 
-	collection := client.Database("Cluster0").Collection("users")
+	collection := handlers.Client.Database("Cluster0").Collection("users")
 
 	exist, err := emailExists(collection, request.Email)
 	if err != nil {
-		logger.Errorf("error emailExists: %v", err)
+		handlers.Logger.Errorf("error emailExists: %v", err)
 		return
 	}
 
 	if exist {
-		sendError(ctx, http.StatusBadRequest, "error email already used")
+		handlers.SendError(ctx, http.StatusBadRequest, "error email already used")
 		return
 	}
 
 	// hash password
 	hash, err := bcrypt.GenerateFromPassword([]byte(request.Password), 10)
 	if err != nil {
-		sendError(ctx, http.StatusBadRequest, "error creating hash password")
+		handlers.SendError(ctx, http.StatusBadRequest, "error creating hash password")
 		return
 	}
 
-	userRequest := schemas.User{
+	userRequest := models.User{
 		Username: request.Username,
 		Password: string(hash),
 		Email:    request.Email,
@@ -51,26 +52,26 @@ func CreateUserHandler(ctx *gin.Context) {
 	res, err := collection.InsertOne(context.TODO(), &userRequest)
 
 	if err != nil {
-		logger.Errorf("error creating users: %v", err)
-		logger.Errorf("error creating users: %v", res)
-		sendError(ctx, http.StatusInternalServerError, "error inserting user v%")
+		handlers.Logger.Errorf("error creating users: %v", err)
+		handlers.Logger.Errorf("error creating users: %v", res)
+		handlers.SendError(ctx, http.StatusInternalServerError, "error inserting user v%")
 		return
 	}
 
 	user, err := getUserByEmail(request.Email, collection, ctx)
 	if err != nil {
-		sendError(ctx, http.StatusBadRequest, "error email") // ::
+		handlers.SendError(ctx, http.StatusBadRequest, "error email") // ::
 		return
 	}
 
 	tokenString, err := CreateTokenString(user)
 
 	if err != nil {
-		sendError(ctx, http.StatusBadRequest, "error signing token")
+		handlers.SendError(ctx, http.StatusBadRequest, "error signing token")
 		return
 	}
 
-	sendSuccess(ctx, "created user", gin.H{
+	handlers.SendSuccess(ctx, "created user", gin.H{
 		"token": tokenString,
 	})
 }

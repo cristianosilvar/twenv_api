@@ -1,14 +1,16 @@
-package handlers
+package spending
 
 import (
 	"net/http"
+	"twenv/handlers"
+	"twenv/models"
 
 	"github.com/gin-gonic/gin"
 	"go.mongodb.org/mongo-driver/bson"
 )
 
-func UpdateEarning(ctx *gin.Context) {
-	updateSpending := SpendingResponse{}
+func UpdateSpending(ctx *gin.Context) {
+	updateSpending := models.SpendingResponse{}
 	/* ctx.BindJSON(&request) */
 
 	/* if err := updateSpending.ValidateSpending(); err != nil {
@@ -17,7 +19,7 @@ func UpdateEarning(ctx *gin.Context) {
 		return
 	} */
 
-	collection := client.Database("Cluster0").Collection("spendings")
+	collection := handlers.Client.Database("Cluster0").Collection("spendings")
 	filter := bson.M{"_id": updateSpending}
 
 	// Atualiza os campos especificados
@@ -31,15 +33,15 @@ func UpdateEarning(ctx *gin.Context) {
 	// Executa a atualização no MongoDB
 	result, err := collection.UpdateOne(ctx, filter, update)
 	if err != nil {
-		logger.Error("update spending error: v%", err)
-		sendError(ctx, http.StatusBadRequest, "update spending error")
+		handlers.Logger.Error("update spending error: v%", err)
+		handlers.SendError(ctx, http.StatusBadRequest, "update spending error")
 		return
 	}
 
 	if result.ModifiedCount < 1 {
-		sendError(ctx, http.StatusBadRequest, "spending not found")
+		handlers.SendError(ctx, http.StatusBadRequest, "spending not found")
 		return
 	}
 
-	sendSuccess(ctx, "update spending sucess", update)
+	handlers.SendSuccess(ctx, "update spending sucess", update)
 }
