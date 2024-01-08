@@ -2,6 +2,8 @@ package models
 
 import (
 	"time"
+
+	"go.mongodb.org/mongo-driver/bson/primitive"
 )
 
 type Spending struct {
@@ -15,4 +17,11 @@ type SpendingResponse struct {
 	Value       float64   `json:"value"`
 	Description string    `json:"description"`
 	Date        time.Time `json:"date"`
+}
+
+type SpendingUpdate struct {
+	Id          primitive.ObjectID `bson:"_id,omitempty"`
+	Value       float64            `json:"value"`
+	Description string             `json:"description"`
+	Date        time.Time          `json:"date"`
 }

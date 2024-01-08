@@ -10,27 +10,24 @@ import (
 )
 
 func UpdateSpending(ctx *gin.Context) {
-	updateSpending := models.SpendingResponse{}
-	/* ctx.BindJSON(&request) */
+	spending := models.SpendingUpdate{}
+	ctx.BindJSON(&spending)
 
-	/* if err := updateSpending.ValidateSpending(); err != nil {
-		logger.Errorf("validation error: %v", err.Error())
-		sendError(ctx, http.StatusBadRequest, err.Error())
+	if err := validateSpendingUpdate(&spending); err != nil {
+		handlers.Logger.Errorf("validation error: %v", err.Error())
+		handlers.SendError(ctx, http.StatusBadRequest, err.Error())
 		return
-	} */
+	}
 
 	collection := handlers.Client.Database("Cluster0").Collection("spendings")
-	filter := bson.M{"_id": updateSpending}
+	filter := bson.D{{Key: "_id", Value: spending.Id}}
 
-	// Atualiza os campos especificados
 	update := bson.M{"$set": bson.M{
-		"description": updateSpending.Description,
-		"date":        updateSpending.Date,
-		"value":       updateSpending.Value,
-		// Adicione outros campos conforme necessário
+		"description": spending.Description,
+		"date":        spending.Date,
+		"value":       spending.Value,
 	}}
 
-	// Executa a atualização no MongoDB
 	result, err := collection.UpdateOne(ctx, filter, update)
 	if err != nil {
 		handlers.Logger.Error("update spending error: v%", err)

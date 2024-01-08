@@ -1,5 +1,7 @@
 package models
 
+import "go.mongodb.org/mongo-driver/bson/primitive"
+
 type Delete struct {
-	Id string `json:"id"`
+	Id primitive.ObjectID `json:"id"`
 }
