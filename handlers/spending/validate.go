@@ -46,8 +46,8 @@ func validateSpendingUpdate(spending *models.SpendingUpdate) error {
 	return nil
 }
 
-func validateDelete(item *models.Delete) error {
-	if item.Id == primitive.NilObjectID {
+func validateDelete(paramString string) error {
+	if paramString == "" {
 		return errParamIsRequired("id")
 	}
 	return nil

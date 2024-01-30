@@ -46,8 +46,8 @@ func validateEarningUpdate(earning *models.EarningUpdate) error {
 	return nil
 }
 
-func validateDelete(item *models.Delete) error {
-	if item.Id == primitive.NilObjectID {
+func validateDelete(paramString string) error {
+	if paramString == "" {
 		return errParamIsRequired("id")
 	}
 	return nil

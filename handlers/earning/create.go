@@ -7,7 +7,19 @@ import (
 	"twenv/models"
 
 	"github.com/gin-gonic/gin"
+	"github.com/google/uuid"
 )
+
+func createNewObj(obj models.Earning) models.EarningResponse {
+	novoID := uuid.New().String()
+
+	return models.EarningResponse{
+		Id:          novoID,
+		Value:       obj.Value,
+		Date:        obj.Date,
+		Description: obj.Description,
+	}
+}
 
 func CreateEarning(ctx *gin.Context) {
 	request := models.Earning{}
@@ -21,11 +33,7 @@ func CreateEarning(ctx *gin.Context) {
 
 	collection := handlers.Client.Database("Cluster0").Collection("earnings")
 
-	earning := models.Earning{
-		Value:       request.Value,
-		Date:        request.Date,
-		Description: request.Description,
-	}
+	earning := createNewObj(request)
 
 	result, err := collection.InsertOne(context.TODO(), &earning)
 	if err != nil {

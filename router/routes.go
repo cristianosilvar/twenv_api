@@ -26,13 +26,13 @@ func InitializeRoutes(r *gin.Engine) {
 		v1.GET("/earning", earning.CreateEarning)
 		v1.POST("/earning", earning.CreateEarning)
 		v1.PUT("/earning", earning.UpdateEarning)
-		v1.DELETE("/earning", earning.DeleteEarning)
+		v1.DELETE("/earning/:id", earning.DeleteEarning)
 		v1.GET("/earnings", earning.ListEarnings)
 
 		v1.GET("/spending", spending.ShowSpending)
 		v1.POST("/spending", spending.CreateSpending)
 		v1.PUT("/spending", spending.UpdateSpending)
-		v1.DELETE("/spending", spending.DeleteSpending)
+		v1.DELETE("/spending/:id", spending.DeleteSpending)
 		v1.GET("/spendings", spending.ListSpending)
 
 		v1.POST("/user/signup", user.CreateUser)

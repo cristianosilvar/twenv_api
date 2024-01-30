@@ -3,11 +3,9 @@ package spending
 import (
 	"net/http"
 	"twenv/handlers"
-	"twenv/models"
 
 	"github.com/gin-gonic/gin"
 	"go.mongodb.org/mongo-driver/bson"
-	"go.mongodb.org/mongo-driver/bson/primitive"
 )
 
 type SpendingDelete struct {
@@ -15,17 +13,16 @@ type SpendingDelete struct {
 }
 
 func DeleteSpending(ctx *gin.Context) {
-	spending := models.Delete{}
-	ctx.ShouldBindJSON(&spending)
+	spending_id := ctx.Param("id")
 
-	if err := validateDelete(&spending); err != nil {
+	if err := validateDelete(spending_id); err != nil {
 		handlers.Logger.Errorf("validation error: %v", err.Error())
 		handlers.SendError(ctx, http.StatusBadRequest, err.Error())
 		return
 	}
 
 	collection := handlers.Client.Database("Cluster0").Collection("spendings")
-	filter := bson.D{{Key: "_id", Value: primitive.ObjectID(spending.Id)}}
+	filter := bson.D{{Key: "id", Value: spending_id}}
 
 	result, err := collection.DeleteOne(ctx, filter)
 	if err != nil {
@@ -39,5 +36,5 @@ func DeleteSpending(ctx *gin.Context) {
 		return
 	}
 
-	handlers.SendSuccess(ctx, "delete-spending", spending)
+	handlers.SendSuccess(ctx, "delete-spending", spending_id)
 }
