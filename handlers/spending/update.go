@@ -20,7 +20,7 @@ func UpdateSpending(ctx *gin.Context) {
 	}
 
 	collection := handlers.Client.Database("Cluster0").Collection("spendings")
-	filter := bson.D{{Key: "_id", Value: spending.Id}}
+	filter := bson.D{{Key: "id", Value: spending.Id}}
 
 	update := bson.M{"$set": bson.M{
 		"description": spending.Description,

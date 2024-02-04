@@ -20,7 +20,7 @@ func UpdateEarning(ctx *gin.Context) {
 	}
 
 	collection := handlers.Client.Database("Cluster0").Collection("earnings")
-	filter := bson.D{{Key: "_id", Value: earning.Id}}
+	filter := bson.D{{Key: "id", Value: earning.Id}}
 
 	update := bson.M{"$set": bson.M{
 		"description": earning.Description,

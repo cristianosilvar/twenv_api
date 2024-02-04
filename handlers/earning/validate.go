@@ -3,8 +3,6 @@ package earning
 import (
 	"fmt"
 	"twenv/models"
-
-	"go.mongodb.org/mongo-driver/bson/primitive"
 )
 
 func errParamIsRequired(name string) error {
@@ -28,10 +26,10 @@ func validateEarning(earning *models.Earning) error {
 }
 
 func validateEarningUpdate(earning *models.EarningUpdate) error {
-	if earning.Description == "" && earning.Value == 0 && earning.Id == primitive.NilObjectID {
+	if earning.Description == "" && earning.Value == 0 && earning.Id == "" {
 		return fmt.Errorf("request body is empty")
 	}
-	if earning.Id == primitive.NilObjectID {
+	if earning.Id == "" {
 		return errParamIsRequired("id")
 	}
 	if earning.Description == "" {

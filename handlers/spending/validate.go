@@ -3,8 +3,6 @@ package spending
 import (
 	"fmt"
 	"twenv/models"
-
-	"go.mongodb.org/mongo-driver/bson/primitive"
 )
 
 func errParamIsRequired(name string) error {
@@ -28,10 +26,10 @@ func validateSpending(spending *models.Spending) error {
 }
 
 func validateSpendingUpdate(spending *models.SpendingUpdate) error {
-	if spending.Description == "" && spending.Value == 0 && spending.Id == primitive.NilObjectID {
+	if spending.Description == "" && spending.Value == 0 && spending.Id == "" {
 		return fmt.Errorf("request body is empty")
 	}
-	if spending.Id == primitive.NilObjectID {
+	if spending.Id == "" {
 		return errParamIsRequired("id")
 	}
 	if spending.Description == "" {
