@@ -10,12 +10,6 @@ func errParamIsRequired(name string) error {
 }
 
 func validateEarning(earning *models.Earning) error {
-	if earning.Description == "" && earning.Value == 0 {
-		return fmt.Errorf("request body is empty")
-	}
-	if earning.Description == "" {
-		return errParamIsRequired("description")
-	}
 	if earning.Value == 0 {
 		return errParamIsRequired("value")
 	}
@@ -26,14 +20,11 @@ func validateEarning(earning *models.Earning) error {
 }
 
 func validateEarningUpdate(earning *models.EarningUpdate) error {
-	if earning.Description == "" && earning.Value == 0 && earning.Id == "" {
+	if earning.Value == 0 && earning.Id == "" {
 		return fmt.Errorf("request body is empty")
 	}
 	if earning.Id == "" {
 		return errParamIsRequired("id")
-	}
-	if earning.Description == "" {
-		return errParamIsRequired("description")
 	}
 	if earning.Value == 0 {
 		return errParamIsRequired("value")

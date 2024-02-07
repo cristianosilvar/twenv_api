@@ -10,12 +10,6 @@ func errParamIsRequired(name string) error {
 }
 
 func validateSpending(spending *models.Spending) error {
-	if spending.Description == "" && spending.Value == 0 {
-		return fmt.Errorf("request body is empty")
-	}
-	if spending.Description == "" {
-		return errParamIsRequired("description")
-	}
 	if spending.Value == 0 {
 		return errParamIsRequired("value")
 	}
@@ -26,14 +20,11 @@ func validateSpending(spending *models.Spending) error {
 }
 
 func validateSpendingUpdate(spending *models.SpendingUpdate) error {
-	if spending.Description == "" && spending.Value == 0 && spending.Id == "" {
+	if spending.Value == 0 && spending.Id == "" {
 		return fmt.Errorf("request body is empty")
 	}
 	if spending.Id == "" {
 		return errParamIsRequired("id")
-	}
-	if spending.Description == "" {
-		return errParamIsRequired("description")
 	}
 	if spending.Value == 0 {
 		return errParamIsRequired("value")
