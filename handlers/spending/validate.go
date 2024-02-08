@@ -10,20 +10,33 @@ func errParamIsRequired(name string) error {
 }
 
 func validateSpending(spending *models.Spending) error {
-	if spending.Description == "" && spending.Value == 0 {
+	if spending.Value == 0 {
+		return errParamIsRequired("value")
+	}
+	/* if spending.Date != time.Now() {
+		return errParamIsRequired("date")
+	} */
+	return nil
+}
+
+func validateSpendingUpdate(spending *models.SpendingUpdate) error {
+	if spending.Value == 0 && spending.Id == "" {
 		return fmt.Errorf("request body is empty")
 	}
-	if spending.Description == "" {
-		return errParamIsRequired("description")
+	if spending.Id == "" {
+		return errParamIsRequired("id")
 	}
 	if spending.Value == 0 {
 		return errParamIsRequired("value")
 	}
+	/* if spending.Date != time.Now() {
+		return errParamIsRequired("date")
+	} */
 	return nil
 }
 
-func validateDelete(item *models.Delete) error {
-	if item.Id == "" {
+func validateDelete(paramString string) error {
+	if paramString == "" {
 		return errParamIsRequired("id")
 	}
 	return nil

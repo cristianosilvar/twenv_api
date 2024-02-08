@@ -11,7 +11,14 @@ type Earning struct {
 }
 
 type EarningResponse struct {
-	Id          any       `bson:"_id,omitempty"`
+	Id          any       `json:"id"`
+	Value       float64   `json:"value"`
+	Description string    `json:"description"`
+	Date        time.Time `json:"date"`
+}
+
+type EarningUpdate struct {
+	Id          string    `json:"id"`
 	Value       float64   `json:"value"`
 	Description string    `json:"description"`
 	Date        time.Time `json:"date"`

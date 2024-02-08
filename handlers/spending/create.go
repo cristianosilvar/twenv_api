@@ -7,7 +7,19 @@ import (
 	"twenv/models"
 
 	"github.com/gin-gonic/gin"
+	"github.com/google/uuid"
 )
+
+func createNewObj(obj models.Spending) models.SpendingResponse {
+	novoID := uuid.New().String()
+
+	return models.SpendingResponse{
+		Id:          novoID,
+		Value:       obj.Value,
+		Date:        obj.Date,
+		Description: obj.Description,
+	}
+}
 
 func CreateSpending(ctx *gin.Context) {
 	request := models.Spending{}
@@ -21,11 +33,7 @@ func CreateSpending(ctx *gin.Context) {
 
 	collection := handlers.Client.Database("Cluster0").Collection("spendings")
 
-	spending := models.Spending{
-		Value:       request.Value,
-		Date:        request.Date,
-		Description: request.Description,
-	}
+	spending := createNewObj(request)
 
 	result, err := collection.InsertOne(context.TODO(), &spending)
 	if err != nil {

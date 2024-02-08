@@ -10,38 +10,35 @@ import (
 )
 
 func UpdateEarning(ctx *gin.Context) {
-	updateSpending := models.EarningResponse{}
-	/* ctx.BindJSON(&request) */
+	earning := models.EarningUpdate{}
+	ctx.BindJSON(&earning)
 
-	/* if err := updateSpending.ValidateSpending(); err != nil {
-		logger.Errorf("validation error: %v", err.Error())
-		sendError(ctx, http.StatusBadRequest, err.Error())
+	if err := validateEarningUpdate(&earning); err != nil {
+		handlers.Logger.Errorf("validation error: %v", err.Error())
+		handlers.SendError(ctx, http.StatusBadRequest, err.Error())
 		return
-	} */
+	}
 
-	collection := handlers.Client.Database("Cluster0").Collection("spendings")
-	filter := bson.M{"_id": updateSpending}
+	collection := handlers.Client.Database("Cluster0").Collection("earnings")
+	filter := bson.D{{Key: "id", Value: earning.Id}}
 
-	// Atualiza os campos especificados
 	update := bson.M{"$set": bson.M{
-		"description": updateSpending.Description,
-		"date":        updateSpending.Date,
-		"value":       updateSpending.Value,
-		// Adicione outros campos conforme necessário
+		"description": earning.Description,
+		"date":        earning.Date,
+		"value":       earning.Value,
 	}}
 
-	// Executa a atualização no MongoDB
 	result, err := collection.UpdateOne(ctx, filter, update)
 	if err != nil {
-		handlers.Logger.Error("update spending error: v%", err)
-		handlers.SendError(ctx, http.StatusBadRequest, "update spending error")
+		handlers.Logger.Error("update earning error: v%", err)
+		handlers.SendError(ctx, http.StatusBadRequest, "update earning error")
 		return
 	}
 
 	if result.ModifiedCount < 1 {
-		handlers.SendError(ctx, http.StatusBadRequest, "spending not found")
+		handlers.SendError(ctx, http.StatusBadRequest, "earning not found")
 		return
 	}
 
-	handlers.SendSuccess(ctx, "update spending sucess", update)
+	handlers.SendSuccess(ctx, "update earning sucess", update)
 }

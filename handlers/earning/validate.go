@@ -10,20 +10,33 @@ func errParamIsRequired(name string) error {
 }
 
 func validateEarning(earning *models.Earning) error {
-	if earning.Description == "" && earning.Value == 0 {
+	if earning.Value == 0 {
+		return errParamIsRequired("value")
+	}
+	/* if earning.Date != time.Now() {
+		return errParamIsRequired("date")
+	} */
+	return nil
+}
+
+func validateEarningUpdate(earning *models.EarningUpdate) error {
+	if earning.Value == 0 && earning.Id == "" {
 		return fmt.Errorf("request body is empty")
 	}
-	if earning.Description == "" {
-		return errParamIsRequired("description")
+	if earning.Id == "" {
+		return errParamIsRequired("id")
 	}
 	if earning.Value == 0 {
 		return errParamIsRequired("value")
 	}
+	/* if earning.Date != time.Now() {
+		return errParamIsRequired("date")
+	} */
 	return nil
 }
 
-func validateDelete(item *models.Delete) error {
-	if item.Id == "" {
+func validateDelete(paramString string) error {
+	if paramString == "" {
 		return errParamIsRequired("id")
 	}
 	return nil
