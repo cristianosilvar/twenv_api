@@ -12,6 +12,9 @@ import (
 func ListSpending(ctx *gin.Context) {
 	collection := handlers.Client.Database("Cluster0").Collection("spendings")
 
+	token := ctx.GetHeader("authenticated-token")
+	handlers.Logger.Info(token)
+
 	cursor, err := collection.Find(ctx, bson.M{})
 	if err != nil {
 		if err != nil {
