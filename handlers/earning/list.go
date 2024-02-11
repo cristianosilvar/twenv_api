@@ -2,6 +2,7 @@ package earning
 
 import (
 	"net/http"
+	"twenv/enums"
 	"twenv/handlers"
 	"twenv/models"
 
@@ -12,7 +13,15 @@ import (
 func ListEarnings(ctx *gin.Context) {
 	collection := handlers.Client.Database("Cluster0").Collection("earnings")
 
-	cursor, err := collection.Find(ctx, bson.M{})
+	authenticated_token := ctx.GetHeader("authenticated-token")
+
+	userID, err := DecodeTokenJwt(authenticated_token)
+	if err != nil {
+		handlers.SendError(ctx, http.StatusBadRequest, enums.ERROR_IN_SERVER_SIDE)
+		return
+	}
+
+	cursor, err := collection.Find(ctx, bson.M{"userid": userID})
 	if err != nil {
 		if err != nil {
 			handlers.SendError(ctx, http.StatusInternalServerError, "error find earnings")

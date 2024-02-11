@@ -2,6 +2,7 @@ package spending
 
 import (
 	"net/http"
+	"twenv/enums"
 	"twenv/handlers"
 	"twenv/models"
 
@@ -12,10 +13,15 @@ import (
 func ListSpending(ctx *gin.Context) {
 	collection := handlers.Client.Database("Cluster0").Collection("spendings")
 
-	token := ctx.GetHeader("authenticated-token")
-	handlers.Logger.Info(token)
+	authenticated_token := ctx.GetHeader("authenticated-token")
 
-	cursor, err := collection.Find(ctx, bson.M{})
+	userID, err := DecodeTokenJwt(authenticated_token)
+	if err != nil {
+		handlers.SendError(ctx, http.StatusBadRequest, enums.ERROR_IN_SERVER_SIDE)
+		return
+	}
+
+	cursor, err := collection.Find(ctx, bson.M{"userid": userID})
 	if err != nil {
 		if err != nil {
 			handlers.SendError(ctx, http.StatusInternalServerError, "error find spendings")

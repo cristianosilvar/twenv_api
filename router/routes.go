@@ -16,7 +16,7 @@ func InitializeRoutes(r *gin.Engine) {
 
 	config := cors.DefaultConfig()
 	config.AllowOrigins = []string{"http://localhost:3000"}
-	config.AllowHeaders = []string{"Content-Type", "Authorization"}
+	config.AllowHeaders = []string{"Content-Type", "Authorization", "Authenticated-token"}
 	config.AllowMethods = []string{"GET", "POST", "PUT", "DELETE"}
 
 	r.Use(cors.New(config))
