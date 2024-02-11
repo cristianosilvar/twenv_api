@@ -4,22 +4,22 @@ import (
 	"context"
 	"net/http"
 	"time"
+	"twenv/enums"
 	"twenv/handlers"
 	"twenv/models"
 
 	"github.com/dgrijalva/jwt-go"
 	"github.com/gin-gonic/gin"
 	"go.mongodb.org/mongo-driver/bson"
-	"go.mongodb.org/mongo-driver/bson/primitive"
 	"go.mongodb.org/mongo-driver/mongo"
 	"golang.org/x/crypto/bcrypt"
 )
 
 type User struct {
-	ID       primitive.ObjectID `bson:"_id,omitempty"`
-	Username string             `bson:"username"`
-	Password string             `bson:"password"`
-	Email    string             `bson:"email"`
+	Id       string `json:"id`
+	Username string `json:"username"`
+	Password string `json:"password"`
+	Email    string `json:"email"`
 }
 
 func SignIn(ctx *gin.Context) {
@@ -28,7 +28,7 @@ func SignIn(ctx *gin.Context) {
 
 	if err := ValidateSignIn(&request); err != nil {
 		handlers.Logger.Errorf("validation error: %v", err.Error())
-		handlers.SendError(ctx, http.StatusBadRequest, err.Error())
+		handlers.SendError(ctx, http.StatusBadRequest, enums.ERROR_IN_SERVER_SIDE)
 		return
 	}
 
@@ -36,20 +36,20 @@ func SignIn(ctx *gin.Context) {
 
 	user, err := getUserByEmail(request.Email, collection, ctx)
 	if err != nil {
-		handlers.SendError(ctx, http.StatusBadRequest, "invalid user")
+		handlers.SendError(ctx, http.StatusAccepted, enums.INCORRECT_USER_OR_PASSWORD)
 		return
 	}
 
 	error := bcrypt.CompareHashAndPassword([]byte(user.Password), []byte(request.Password))
 	if error != nil {
-		handlers.SendError(ctx, http.StatusBadRequest, "invalid email or password")
+		handlers.SendError(ctx, http.StatusAccepted, enums.INCORRECT_USER_OR_PASSWORD)
 		return
 	}
 
 	tokenString, err := CreateTokenString(user)
 
 	if err != nil {
-		handlers.SendError(ctx, http.StatusBadRequest, "error signing token")
+		handlers.SendError(ctx, http.StatusBadRequest, enums.ERROR_IN_SERVER_SIDE)
 		return
 	}
 
@@ -74,7 +74,7 @@ func getUserByEmail(email string, collection *mongo.Collection, ctx *gin.Context
 
 func CreateTokenString(user User) (string, error) {
 	token := jwt.NewWithClaims(jwt.SigningMethodHS256, jwt.MapClaims{
-		"sub":      user.ID,
+		"sub":      user.Id,
 		"username": user.Username,
 		"email":    user.Email,
 		"expires":  time.Now().Add(time.Hour * 24 * 30).Unix(),

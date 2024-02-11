@@ -37,5 +37,6 @@ func InitializeRoutes(r *gin.Engine) {
 
 		v1.POST("/user/signup", user.CreateUser)
 		v1.POST("/user/signin", user.SignIn)
+		v1.DELETE("/user/delete", user.DeleteUser)
 	}
 }

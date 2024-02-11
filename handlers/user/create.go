@@ -3,10 +3,13 @@ package user
 import (
 	"context"
 	"net/http"
+	"time"
+	"twenv/enums"
 	"twenv/handlers"
 	"twenv/models"
 
 	"github.com/gin-gonic/gin"
+	"github.com/google/uuid"
 	"go.mongodb.org/mongo-driver/bson"
 	"go.mongodb.org/mongo-driver/mongo"
 
@@ -16,6 +19,8 @@ import (
 func CreateUser(ctx *gin.Context) {
 	request := models.User{}
 	ctx.BindJSON(&request)
+
+	userID := uuid.New().String()
 
 	if err := validate(&request); err != nil {
 		handlers.Logger.Errorf("validation error: %v", err.Error())
@@ -28,25 +33,29 @@ func CreateUser(ctx *gin.Context) {
 	exist, err := emailExists(collection, request.Email)
 	if err != nil {
 		handlers.Logger.Errorf("error emailExists: %v", err)
+		handlers.SendError(ctx, http.StatusBadRequest, enums.ERROR_IN_SERVER_SIDE)
 		return
 	}
 
 	if exist {
-		handlers.SendError(ctx, http.StatusBadRequest, "error email already used")
+		handlers.SendError(ctx, http.StatusAccepted, enums.EMAIL_IS_ALREADY_USED)
 		return
 	}
 
 	// hash password
 	hash, err := bcrypt.GenerateFromPassword([]byte(request.Password), 10)
 	if err != nil {
-		handlers.SendError(ctx, http.StatusBadRequest, "error creating hash password")
+		handlers.SendError(ctx, http.StatusBadRequest, enums.ERROR_IN_SERVER_SIDE)
 		return
 	}
 
 	userRequest := models.User{
-		Username: request.Username,
-		Password: string(hash),
-		Email:    request.Email,
+		Id:        userID,
+		Username:  request.Username,
+		Password:  string(hash),
+		Email:     request.Email,
+		CreatedAt: time.Now(),
+		UpdateAt:  time.Now(),
 	}
 
 	res, err := collection.InsertOne(context.TODO(), &userRequest)
@@ -54,20 +63,20 @@ func CreateUser(ctx *gin.Context) {
 	if err != nil {
 		handlers.Logger.Errorf("error creating users: %v", err)
 		handlers.Logger.Errorf("error creating users: %v", res)
-		handlers.SendError(ctx, http.StatusInternalServerError, "error inserting user v%")
+		handlers.SendError(ctx, http.StatusInternalServerError, enums.ERROR_IN_SERVER_SIDE)
 		return
 	}
 
 	user, err := getUserByEmail(request.Email, collection, ctx)
 	if err != nil {
-		handlers.SendError(ctx, http.StatusBadRequest, "error email") // ::
+		handlers.SendError(ctx, http.StatusBadRequest, enums.ERROR_IN_SERVER_SIDE) // ::
 		return
 	}
 
 	tokenString, err := CreateTokenString(user)
 
 	if err != nil {
-		handlers.SendError(ctx, http.StatusBadRequest, "error signing token")
+		handlers.SendError(ctx, http.StatusBadRequest, enums.ERROR_IN_SERVER_SIDE)
 		return
 	}
 
@@ -80,6 +89,7 @@ func CreateUser(ctx *gin.Context) {
 func emailExists(collection *mongo.Collection, email string) (bool, error) {
 	filter := bson.M{"email": email}
 	count, err := collection.CountDocuments(context.TODO(), filter)
+
 	if err != nil {
 		return false, err
 	}

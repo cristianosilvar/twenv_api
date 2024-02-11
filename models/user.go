@@ -1,20 +1,26 @@
 package models
 
+import "time"
+
 // import "time"
 
 type User struct {
-	Username string
-	Email    string
-	Password string
+	Id        string
+	Username  string
+	Email     string
+	Password  string
+	CreatedAt time.Time
+	UpdateAt  time.Time
+	DeletedAt time.Time
 }
 
 type UserResponse struct {
-	ID       string `json:"id"`
-	Email    string `json:"email"`
-	Username string `json:"username"`
-	// CreatedAt time.Time `json:"createdAt"`
-	// UpdatedAt time.Time `json:"updatedAt"`
-	// DeletedAt time.Time `json:"deletedAt,omitempty"`
+	Id        string    `json:"id"`
+	Email     string    `json:"email"`
+	Username  string    `json:"username"`
+	CreatedAt time.Time `json:"createdAt"`
+	UpdatedAt time.Time `json:"updatedAt"`
+	DeletedAt time.Time `json:"deletedAt,omitempty"`
 }
 
 type CreateUserResponse struct {
