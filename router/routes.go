@@ -21,7 +21,7 @@ func InitializeRoutes(r *gin.Engine) {
 
 	r.Use(cors.New(config))
 
-	v1 := r.Group("/v1/api")
+	v1 := r.Group("/api/v1")
 	{
 		v1.GET("/earning", earning.CreateEarning)
 		v1.POST("/earning", earning.CreateEarning)
