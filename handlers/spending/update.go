@@ -40,5 +40,5 @@ func UpdateSpending(ctx *gin.Context) {
 		return
 	}
 
-	handlers.SendSuccess(ctx, "update spending sucess", update)
+	handlers.SendSuccess(ctx, "update spending success", update)
 }

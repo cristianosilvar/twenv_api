@@ -10,7 +10,7 @@ import (
 func SendSuccess(ctx *gin.Context, op string, data interface{}) {
 	ctx.Header("Content-type", "application/json")
 	ctx.JSON(http.StatusOK, gin.H{
-		"sucess":  true,
+		"success": true,
 		"message": fmt.Sprintf("operation from handler: %s successfull", op),
 		"data":    data,
 	})
