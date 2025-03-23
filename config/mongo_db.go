@@ -2,8 +2,10 @@ package config
 
 import (
 	"context"
+	"os"
 	"time"
 
+	"github.com/joho/godotenv"
 	"go.mongodb.org/mongo-driver/mongo"
 	"go.mongodb.org/mongo-driver/mongo/options"
 	"go.mongodb.org/mongo-driver/mongo/readpref"
@@ -12,8 +14,14 @@ import (
 func InitializeMongoDB() (*mongo.Client, error) {
 	logger = GetLogger("mongodb")
 
+	// Loading the .env file
+	err := godotenv.Load()
+	if err != nil {
+		logger.Errorf("error when loading the .env file")
+	}
+
 	// Configurar as opções de conexão
-	uri := "mongodb+srv://twenvweb:admin@cluster0.amyx2ob.mongodb.net/?retryWrites=true&w=majority"
+	uri := os.Getenv("URI_MONGO_DB")
 
 	// Configurar o contexto com timeout
 	ctx, cancel := context.WithTimeout(context.Background(), 10*time.Second)
